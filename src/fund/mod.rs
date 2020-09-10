@@ -1,10 +1,10 @@
-use std::io::{ErrorKind, Result, Error};
-use url::Url;
-use std::time::SystemTime;
-use reqwest;
 use regex::Regex;
-use serde::{Serialize, Deserialize};
+use reqwest;
+use serde::{Deserialize, Serialize};
 use serde_json;
+use std::io::{Error, ErrorKind, Result};
+use std::time::SystemTime;
+use url::Url;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Fund {
@@ -33,17 +33,19 @@ pub struct Fund {
     pub v_calc_time: String,
 }
 
-const SEARCH_API: &'static str = "http://fundsuggest.eastmoney.com/FundSearch/api/FundSearchAPI.ashx";
+const SEARCH_API: &'static str =
+    "http://fundsuggest.eastmoney.com/FundSearch/api/FundSearchAPI.ashx";
 
 pub struct App {}
 
 impl<'a> App {
     pub fn new() -> Self {
-        App{}
+        App {}
     }
 
     fn gen_code_detail_url(&self, code: String) -> Url {
-        Url::parse(format!("http://fundgz.1234567.com.cn/js/{}.js", code).as_str()).expect("parse detail url error")
+        Url::parse(format!("http://fundgz.1234567.com.cn/js/{}.js", code).as_str())
+            .expect("parse detail url error")
     }
 
     pub fn search(&self, query: &str) -> Result<Vec<Fund>> {
@@ -52,10 +54,19 @@ impl<'a> App {
 
     pub async fn get_detail(&self, code: String) -> Result<Fund> {
         let mut url = self.gen_code_detail_url(code);
-        let now = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap().as_millis();
-        url.query_pairs_mut().append_pair("rt", now.to_string().as_str());
+        let now = SystemTime::now()
+            .duration_since(SystemTime::UNIX_EPOCH)
+            .unwrap()
+            .as_millis();
+        url.query_pairs_mut()
+            .append_pair("rt", now.to_string().as_str());
 
-        let text = reqwest::get(url).await.expect("error").text().await.expect("parse error");
+        let text = reqwest::get(url)
+            .await
+            .expect("error")
+            .text()
+            .await
+            .expect("parse error");
         self.to_fund(text).await
     }
 
