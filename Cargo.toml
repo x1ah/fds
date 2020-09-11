@@ -2,7 +2,7 @@
 name = "fds"
 version = "0.1.0"
 authors = ["x1ah <x1ahgxq@gmail.com>"]
-description = "A tool to manage funds."
+description = "A tool to manage fund."
 edition = "2018"
 license = "MIT"
 homepage = "https://github.com/x1ah/fds"
