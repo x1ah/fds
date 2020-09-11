@@ -18,7 +18,7 @@ async fn main() -> Result<()> {
                 )
         )
         .subcommand(
-            SubCommand::with_name("col")
+            SubCommand::with_name("l")
                 .about("list of collected funds")
         ).get_matches();
 
@@ -31,7 +31,7 @@ async fn main() -> Result<()> {
                 println!("Not found {} !", name);
             }
         },
-        ("col", Some(_)) => println!("🤪 coming soon"),
+        ("l", Some(_)) => println!("🤪 coming soon"),
         _ => println!("something charred.")
     };
     Ok(())

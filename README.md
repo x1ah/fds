@@ -2,6 +2,12 @@
 
 > 命令行基金助手
 
+## Install
+
+```
+$ cargo install fds
+```
+
 
 ## Usage
 
@@ -14,5 +20,5 @@ $ fds search 中证白酒
 查看自选
 
 ```
-$ fds col
+$ fds l
 ```
