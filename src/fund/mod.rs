@@ -42,7 +42,7 @@ impl Clone for Fund {
             v_yesterday: self.v_yesterday.to_string(),
             v_today: self.v_today.to_string(),
             v_gap: self.v_gap.to_string(),
-            v_calc_time: self.v_calc_time.to_string()
+            v_calc_time: self.v_calc_time.to_string(),
         }
     }
 }
@@ -120,15 +120,22 @@ impl<'a> App {
             .expect("parse error");
 
         let mut futures = vec![];
-        let _: Vec<()> = resp.datas.iter().map(|v| futures.push(self.get_detail(v.code.to_string()))).collect();
+        let _: Vec<()> = resp
+            .datas
+            .iter()
+            .map(|v| futures.push(self.get_detail(v.code.to_string())))
+            .collect();
         let funds = join_all(futures).await;
 
         let mut detail_map: HashMap<String, Fund> = HashMap::new();
-        let _: Vec<()> = funds.into_iter().map(|v| {
-            if let Ok(f) = v {
-                detail_map.insert(f.code.to_string(), f);
-            };
-        }).collect();
+        let _: Vec<()> = funds
+            .into_iter()
+            .map(|v| {
+                if let Ok(f) = v {
+                    detail_map.insert(f.code.to_string(), f);
+                };
+            })
+            .collect();
 
         let mut res: Vec<Fund> = vec![];
         for data in resp.datas.into_iter() {
@@ -143,7 +150,7 @@ impl<'a> App {
                     v_yesterday: "".to_string(),
                     v_today: "".to_string(),
                     v_gap: "".to_string(),
-                    v_calc_time: "".to_string()
+                    v_calc_time: "".to_string(),
                 })
             }
         }
