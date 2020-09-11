@@ -73,13 +73,13 @@ struct SearchRespBaseInfo {
 
 pub struct App {}
 
-impl<'a> App {
+impl App {
     pub fn new() -> Self {
         App {}
     }
 
     // 详情 URL
-    fn gen_code_detail_url(&self, code: String) -> Url {
+    fn gen_code_detail_url(&self, code: &str) -> Url {
         let mut url = Url::parse(format!("http://fundgz.1234567.com.cn/js/{}.js", code).as_str())
             .expect("parse detail url error");
         let now = SystemTime::now()
@@ -93,7 +93,7 @@ impl<'a> App {
     }
 
     // 搜索 URL
-    fn gen_search_url(&self, keyword: String) -> Url {
+    fn gen_search_url(&self, keyword: &str) -> Url {
         let mut url =
             Url::parse("http://fundsuggest.eastmoney.com/FundSearch/api/FundSearchAPI.ashx")
                 .expect("parse search url error");
@@ -106,12 +106,12 @@ impl<'a> App {
         url.query_pairs_mut()
             .append_pair("_", now.to_string().as_str())
             .append_pair("m", "1")
-            .append_pair("key", keyword.as_str());
+            .append_pair("key", keyword);
         url
     }
 
     pub async fn search(&self, query: &str) -> Result<Vec<Fund>> {
-        let url = self.gen_search_url(query.to_string());
+        let url = self.gen_search_url(query);
         let resp = reqwest::get(url)
             .await
             .expect("search error")
@@ -123,7 +123,7 @@ impl<'a> App {
         let _: Vec<()> = resp
             .datas
             .iter()
-            .map(|v| futures.push(self.get_detail(v.code.to_string())))
+            .map(|v| futures.push(self.get_detail(&v.code)))
             .collect();
         let funds = join_all(futures).await;
 
@@ -144,13 +144,13 @@ impl<'a> App {
                 res.push(detail.clone());
             } else {
                 res.push(Fund {
-                    name: data.name.to_string(),
-                    code: data.code.to_string(),
-                    manager: data.base_info.manager.to_string(),
-                    v_yesterday: "".to_string(),
-                    v_today: "".to_string(),
-                    v_gap: "".to_string(),
-                    v_calc_time: "".to_string(),
+                    name: data.name,
+                    code: data.code,
+                    manager: data.base_info.manager,
+                    v_yesterday: "".into(),
+                    v_today: "".into(),
+                    v_gap: "".into(),
+                    v_calc_time: "".into(),
                 })
             }
         }
@@ -158,7 +158,7 @@ impl<'a> App {
         Ok(res)
     }
 
-    pub async fn get_detail(&self, code: String) -> Result<Fund> {
+    pub async fn get_detail(&self, code: &str) -> Result<Fund> {
         let url = self.gen_code_detail_url(code);
 
         let text = reqwest::get(url)
@@ -167,15 +167,15 @@ impl<'a> App {
             .text()
             .await
             .expect("parse error");
-        self.to_fund(text)
+        self.to_fund(&text)
     }
 
-    fn to_fund(&self, text: String) -> Result<Fund> {
+    fn to_fund(&self, text: &str) -> Result<Fund> {
         let pattern = match Regex::new(r"jsonpgz\((?P<data>.+)\)") {
             Ok(v) => v,
             Err(e) => return Err(Error::new(ErrorKind::InvalidData, e.to_string())),
         };
-        let res = pattern.captures(&text);
+        let res = pattern.captures(text);
 
         let json_data = match res {
             Some(v) => v.name("data").expect("err").as_str(),
