@@ -1,12 +1,12 @@
-use url::Url;
-use std::time::SystemTime;
 use crate::fund::Fund;
-use std::io::{Result, ErrorKind, Error};
-use std::collections::HashMap;
-use regex::Regex;
-use serde_json;
-use serde::{Deserialize, Serialize};
 use futures::future::join_all;
+use regex::Regex;
+use serde::{Deserialize, Serialize};
+use serde_json;
+use std::collections::HashMap;
+use std::io::{Error, ErrorKind, Result};
+use std::time::SystemTime;
+use url::Url;
 
 #[derive(Debug, Serialize, Deserialize)]
 struct SearchResp {
@@ -23,7 +23,7 @@ struct SearchRespData {
     name: String,
 
     #[serde(rename(deserialize = "FundBaseInfo"))]
-    base_info: SearchRespBaseInfo,
+    base_info: Option<SearchRespBaseInfo>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -78,7 +78,7 @@ impl App {
             .expect("search error")
             .json::<SearchResp>()
             .await
-            .expect("parse error");
+            .unwrap();
 
         let mut futures = vec![];
         let _: Vec<()> = resp
@@ -100,14 +100,19 @@ impl App {
 
         let mut res: Vec<Fund> = vec![];
         for data in resp.datas.into_iter() {
+            let manager = match data.base_info {
+                Some(v) => v.manager,
+                _ => "".to_string(),
+            };
+
             if let Some(detail) = detail_map.get_mut(data.code.as_str()) {
-                detail.manager = data.base_info.manager;
+                detail.manager = manager;
                 res.push(detail.clone());
             } else {
                 res.push(Fund {
                     name: data.name,
                     code: data.code,
-                    manager: data.base_info.manager,
+                    manager,
                     v_yesterday: "".into(),
                     v_today: "".into(),
                     v_gap: "".into(),

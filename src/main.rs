@@ -1,6 +1,6 @@
 mod fund;
+use clap::{App, AppSettings, Arg, SubCommand};
 use std::io::Result;
-use clap::{App, SubCommand, Arg, AppSettings};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -13,14 +13,10 @@ async fn main() -> Result<()> {
             SubCommand::with_name("search")
                 .about("search funds by name")
                 .version("1.0.0")
-                .arg(
-                    Arg::with_name("name").help("name of fund")
-                )
+                .arg(Arg::with_name("name").help("name of fund")),
         )
-        .subcommand(
-            SubCommand::with_name("l")
-                .about("list of collected funds")
-        ).get_matches();
+        .subcommand(SubCommand::with_name("l").about("list of collected funds"))
+        .get_matches();
 
     match matches.subcommand() {
         ("search", Some(arg)) => {
@@ -30,9 +26,9 @@ async fn main() -> Result<()> {
             } else {
                 println!("Not found {} !", name);
             }
-        },
+        }
         ("l", Some(_)) => println!("🤪 coming soon"),
-        _ => println!("something charred.")
+        _ => println!("something charred."),
     };
     Ok(())
 }
