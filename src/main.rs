@@ -1,6 +1,5 @@
 mod fund;
 use std::io::Result;
-use tokio;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -10,7 +9,7 @@ async fn main() -> Result<()> {
         .unwrap();
     println!("{:?}", resp);
 
-    let v = fund::App::new().search("广发纳斯达克").await;
+    let v = fund::App::new().search("富国天").await;
 
     println!("{:?}", v);
     Ok(())

@@ -1,8 +1,6 @@
 use futures::future::join_all;
 use regex::Regex;
-use reqwest;
 use serde::{Deserialize, Serialize};
-use serde_json;
 use std::collections::HashMap;
 use std::io::{Error, ErrorKind, Result};
 use std::time::SystemTime;
@@ -33,6 +31,20 @@ pub struct Fund {
     // 估算时间
     #[serde(default, rename(deserialize = "gztime"))]
     pub v_calc_time: String,
+}
+
+impl Clone for Fund {
+    fn clone(&self) -> Fund {
+        Fund {
+            name: self.name.to_string(),
+            code: self.code.to_string(),
+            manager: self.manager.to_string(),
+            v_yesterday: self.v_yesterday.to_string(),
+            v_today: self.v_today.to_string(),
+            v_gap: self.v_gap.to_string(),
+            v_calc_time: self.v_calc_time.to_string()
+        }
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -108,23 +120,34 @@ impl<'a> App {
             .expect("parse error");
 
         let mut futures = vec![];
-        let mut managers_map: HashMap<String, String> = HashMap::new();
-        for data in resp.datas {
-            futures.push(self.get_detail(data.code.clone()));
-            managers_map.insert(data.code, data.base_info.manager);
-        }
-
+        let _: Vec<()> = resp.datas.iter().map(|v| futures.push(self.get_detail(v.code.to_string()))).collect();
         let funds = join_all(futures).await;
-        let mut res = vec![];
-        for fund in funds.into_iter() {
-            if let Ok(mut v) = fund {
-                v.manager = match managers_map.get(v.code.as_str()) {
-                    Some(m) => m.to_string(),
-                    _ => "".to_string(),
-                };
-                res.push(v)
+
+        let mut detail_map: HashMap<String, Fund> = HashMap::new();
+        let _: Vec<()> = funds.into_iter().map(|v| {
+            if let Ok(f) = v {
+                detail_map.insert(f.code.to_string(), f);
+            };
+        }).collect();
+
+        let mut res: Vec<Fund> = vec![];
+        for data in resp.datas.into_iter() {
+            if let Some(detail) = detail_map.get_mut(data.code.as_str()) {
+                detail.manager = data.base_info.manager;
+                res.push(detail.clone());
+            } else {
+                res.push(Fund {
+                    name: data.name.to_string(),
+                    code: data.code.to_string(),
+                    manager: data.base_info.manager.to_string(),
+                    v_yesterday: "".to_string(),
+                    v_today: "".to_string(),
+                    v_gap: "".to_string(),
+                    v_calc_time: "".to_string()
+                })
             }
         }
+
         Ok(res)
     }
 
