@@ -1,8 +1,14 @@
 [package]
-name = "nn"
+name = "fds"
 version = "0.1.0"
 authors = ["x1ah <x1ahgxq@gmail.com>"]
+description = "A tool to manage funds."
 edition = "2018"
+license = "MIT"
+homepage = "https://github.com/x1ah/fds"
+repository = "https://github.com/x1ah/fds"
+keywords = ["基金", "funds", "cli"]
+readme = "README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
