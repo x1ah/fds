@@ -2,7 +2,6 @@ use crate::fund::Fund;
 use futures::future::join_all;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
-use serde_json;
 use std::collections::HashMap;
 use std::io::{Error, ErrorKind, Result};
 use std::time::SystemTime;
