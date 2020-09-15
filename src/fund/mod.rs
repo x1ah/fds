@@ -1,5 +1,5 @@
-mod fetch;
+mod fetcher;
 mod model;
 
-pub use fetch::App;
+pub use fetcher::App;
 pub use model::Fund;

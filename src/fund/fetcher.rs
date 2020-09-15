@@ -135,6 +135,23 @@ impl App {
         self.to_fund(&text)
     }
 
+    // 批量获取
+    pub async fn bulk_get_detail(&self, codes: Vec<String>) -> Vec<Fund> {
+        let mut futures = vec![];
+        for f in codes.iter() {
+            futures.push(self.get_detail(f.as_str()));
+        }
+
+        let funds = join_all(futures).await;
+        let mut res = vec![];
+        for f in funds.iter() {
+            if let Ok(v) = f {
+                res.push(v.clone());
+            }
+        }
+        res
+    }
+
     fn to_fund(&self, text: &str) -> Result<Fund> {
         let pattern = match Regex::new(r"jsonpgz\((?P<data>.+)\)") {
             Ok(v) => v,
