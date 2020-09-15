@@ -22,7 +22,9 @@ async fn main() -> Result<()> {
         ("search", Some(arg)) => {
             let name = arg.value_of("name").expect("miss fund name");
             if let Ok(v) = fund::App::new().search(name).await {
-                println!("{:?}", v);
+                for _fund in v.iter() {
+                    println!("{}", _fund);
+                }
             } else {
                 println!("Not found {} !", name);
             }

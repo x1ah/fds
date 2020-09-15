@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use std::fmt;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Fund {
@@ -38,5 +39,11 @@ impl Clone for Fund {
             v_gap: self.v_gap.to_string(),
             v_calc_time: self.v_calc_time.to_string(),
         }
+    }
+}
+
+impl fmt::Display for Fund {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}\t{}\t{}\t{}\t{}", self.code, self.name, self.v_gap, self.v_calc_time, self.manager)
     }
 }
