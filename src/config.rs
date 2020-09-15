@@ -27,6 +27,23 @@ impl Config {
         Ok(cfg)
     }
 
+    pub fn add(&mut self, code: String) -> Result<()> {
+        self.funds.push(code);
+        self.flush()
+    }
+
+    fn flush(&self) -> Result<()> {
+        let w = OpenOptions::new()
+            .write(true)
+            .create(true)
+            .open(Self::default_config_path())?;
+        let mut writer = BufWriter::new(w);
+        let content = toml::to_string(self).unwrap();
+        let _ = writer.write(content.as_bytes());
+        writer.flush().unwrap();
+        Ok(())
+    }
+
     pub fn default_config_path() -> PathBuf {
         let mut path = match dirs::home_dir() {
             Some(v) => v,
