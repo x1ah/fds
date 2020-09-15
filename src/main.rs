@@ -1,10 +1,12 @@
 mod config;
 mod fund;
+mod ui;
 
 use clap::{App, AppSettings, Arg, SubCommand};
 use config::Config;
 use std::io::Result;
 use std::path::PathBuf;
+use crate::ui::Blueprint;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -30,9 +32,7 @@ async fn main() -> Result<()> {
         ("search", Some(arg)) => {
             let name = arg.value_of("name").expect("miss fund name");
             if let Ok(v) = fund::App::new().search(name).await {
-                for _fund in v.iter() {
-                    println!("{}", _fund);
-                }
+                Blueprint::new(v).draw();
             } else {
                 println!("Not found {} !", name);
             }
@@ -45,9 +45,7 @@ async fn main() -> Result<()> {
             };
             let cfg = Config::new(path)?;
             let funds = fund::App::new().bulk_get_detail(cfg.funds).await;
-            for _fund in funds {
-                println!("{}", _fund);
-            }
+            Blueprint::new(funds).draw();
         }
         _ => println!("something charred."),
     };
