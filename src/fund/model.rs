@@ -44,6 +44,10 @@ impl Clone for Fund {
 
 impl fmt::Display for Fund {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}\t{}\t{}\t{}\t{}", self.code, self.name, self.v_gap, self.v_calc_time, self.manager)
+        write!(
+            f,
+            "{}\t{}\t{}\t{}\t{}",
+            self.code, self.name, self.v_gap, self.v_calc_time, self.manager
+        )
     }
 }
