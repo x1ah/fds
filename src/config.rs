@@ -9,6 +9,7 @@ pub struct Config {
 }
 
 impl Config {
+    // 配置文件默认为 $HOME/.config/fds/config.toml
     pub fn new(path: Option<PathBuf>) -> Result<Self> {
         let p = match path {
             Some(v) => v,
@@ -28,8 +29,11 @@ impl Config {
     }
 
     pub fn add(&mut self, code: String) -> Result<()> {
-        self.funds.push(code);
-        self.flush()
+        if !self.funds.contains(&code) {
+            self.funds.push(code);
+            self.flush()?
+        }
+        Ok(())
     }
 
     fn flush(&self) -> Result<()> {

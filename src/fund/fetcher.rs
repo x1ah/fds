@@ -132,7 +132,7 @@ impl App {
             .text()
             .await
             .expect("parse error");
-        self.to_fund(&text)
+        self.parse_detail_resp(&text)
     }
 
     // 批量获取
@@ -152,7 +152,8 @@ impl App {
         res
     }
 
-    fn to_fund(&self, text: &str) -> Result<Fund> {
+    // 解析详情接口返回数据
+    fn parse_detail_resp(&self, text: &str) -> Result<Fund> {
         let pattern = match Regex::new(r"jsonpgz\((?P<data>.+)\)") {
             Ok(v) => v,
             Err(e) => return Err(Error::new(ErrorKind::InvalidData, e.to_string())),
