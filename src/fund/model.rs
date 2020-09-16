@@ -46,7 +46,7 @@ impl fmt::Display for Fund {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "{}\t{}\t{}\t{}\t{}",
+            "{:^8} | {}\t | {:^8} | {:^18} | {:^10}",
             self.code, self.name, self.v_gap, self.v_calc_time, self.manager
         )
     }
