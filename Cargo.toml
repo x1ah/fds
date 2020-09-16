@@ -1,6 +1,6 @@
 [package]
 name = "fds"
-version = "0.2.2"
+version = "0.3.0"
 authors = ["x1ah <x1ahgxq@gmail.com>"]
 description = "A tool to manage fund."
 edition = "2018"
