@@ -17,7 +17,7 @@ $ cargo install fds
 按基金名搜索
 
 ```
-$ fds search 中证白酒
+$ fds search 富国天惠
 ```
 
 添加自选
